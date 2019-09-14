@@ -3,12 +3,6 @@ use16
 
 jmp main
 
-;include 'idt.asm'
-
-; Print string to screen
-; si - address of the begin of string
-
-
 redirect_IRQ:
 ; BX = { BL = Начало для IRQ 0..7, BH = начало для IRQ 8..15 }
 ; DX = Маска прерываний IRQ ( DL - для IRQ 0..7, DH - IRQ 8..15 )
@@ -68,9 +62,6 @@ main:
     mov ax, 3
     int 10h
 
-    ;mov si, hi_real
-    ;call putstr
-
     mov [save_ss], ss
     mov [save_ds], ds
     mov [save_es], es
@@ -88,7 +79,6 @@ main:
     ;out 92h,al
 
     lgdt [GDTR]  
-    ; lidt [IDTR]
 
     call set_PE 
 
@@ -219,7 +209,7 @@ real_mode:
     mov es,[save_es]
     mov fs,[save_fs]
     mov gs,[save_gs]
-    
+
 
     in         al,70h              ; индексный порт CMOS
     and        al,07Fh             ; сброс бита 7 отменяет блокирование NMI
@@ -298,7 +288,3 @@ label GDT_SIZE at $-gdt32
 GDTR:
     dw GDT_SIZE-1
     dd gdt32+10000h
-
-
-
-
