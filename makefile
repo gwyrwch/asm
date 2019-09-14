@@ -14,4 +14,4 @@ clean:
 	rm min_boot.bin protected.bin
 
 run: for_bios.bin
-	kvm for_bios.bin
+	qemu-system-i386 for_bios.bin

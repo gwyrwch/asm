@@ -65,7 +65,7 @@ save_gs dw ?
 ;========================================
 main:
 
-    mov ax,3
+    mov ax, 3
     int 10h
 
     ;mov si, hi_real
@@ -358,29 +358,46 @@ gp db '** GENERAL PROTECTION FAULT **',0
 align   8
 
 gdt32:
-    dd 0x0, 0x0
+    dd 0x0, 0x0 ; null descriptor
 
+
+    ; code segment
     dw 0xFFFF ; segment length, bits 0-15
     dw 0x0    ; segment base, bits 0-15
     db 0x1    ; segment base, bits 16-23
     db 0x9A   ; flags (8 bits)
+    ;1   00   1  101   0
+    ;P   DPL  S  TYPE  A
     db 0x40   ; flags (4 bits) + segment length, bits 16-19
+    ;0100 0000
+    ;GDXU
     db 0x0    ; segment base, bits 24-31
 
+    
+    ; data segment read&write
     dw 0xFFFF
     dw 0x0
     db 0x1
     db 0x92
+    ;1   00   1  001   0
+    ;P   DPL  S  TYPE  A
     db 0xCF ; db 0x40
+    ;1100 1111
+    ;GDXU   
     db 0x0
 
+    
+    ; data segment read&write (video segment)
     dw 0xFFFF
     dw 0x8000
     db 0x0B
     db 0x92
     db 0x40
+    ;0100 0000
+    ;GDXU
     db 0x0
 
+    ; code segment
     dw 0xFFFF
     dw 0x0
     db 0x1
@@ -388,6 +405,7 @@ gdt32:
     db 0x0
     db 0x0
 
+    ; data segment 
     dw 0xFFFF
     dw 0x0
     db 0x1
@@ -654,7 +672,6 @@ IDT:
 IDTR:
     dw $ - IDT - 1 ; size (16 bits), always one less of its true size
     dd IDT + 0x1000 * 0x10
-
 .real_pointer:
     dw 0x3FF
     dd 0x0
